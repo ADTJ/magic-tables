@@ -23,9 +23,12 @@ describe("Row", () => {
     describe("methods", () => {
 
         const table = new Table({name: "test"});
+        const row = new Row({table, model: { Foo: "bar"}});
+        table.rows.push(row);
 
-        it("Should allow me to retrieve fields", () => {
-            
+        it("Should allow field retrieval", () => {
+            let value = row.field<string>("Foo");
+            expect(value).toBe("bar");
         });
     });
 
