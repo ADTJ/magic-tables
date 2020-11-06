@@ -2,7 +2,7 @@
   "name": "magic-tables",
   "version": "0.0.1",
   "description": "JS data table library written in TypeScript",
-  "main": "table.js",
+  "main": "Table.js",
   "directories": {
     "test": "tests"
   },
