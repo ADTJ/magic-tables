@@ -22,7 +22,9 @@ export class Table {
         return this._rows;
     }
 
+    /** @param name The name of the table to be created */
     constructor(name: string);
+    /** @param options (optional) A set of options with which to set up the table */
     constructor(options?: Table.ConstructorArgs);
     constructor(options?: string | Table.ConstructorArgs) {
         if(options == null) 
@@ -33,6 +35,7 @@ export class Table {
         this.construct(options);
     }
 
+    /** Constructor as separate method to support both overloads with default parameters more easily */
     private construct({name = "" } = { } as Table.ConstructorArgs) {
         this.name = name;
         this._columns = [];
@@ -45,6 +48,7 @@ export class Table {
 
 export module Table {
     export interface ConstructorArgs {
+        /** The name of the table to be created */
         name?: string;
     }
 }
