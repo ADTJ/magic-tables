@@ -2,10 +2,10 @@
 
 WIP JS data table library written in TypeScript
 
-##Aims
+## Aims
 
-Support for performant sorting, filtering etc.
+1. Support for performant sorting, filtering etc.
 
-Support for versioning
+2. Support for versioning
 
-Traversal by row/column
+3. Traversal by row/column
