@@ -9,4 +9,10 @@ describe("Table", () => {
         const table = new Table();
         expect(table).toBeDefined("Table constructor returned no value");
     });
+
+    it("Should have a name", () => {
+        const tableName = "TestTable";
+        const table = new Table({ name: tableName });
+        expect(table.name).toBe(tableName);
+    })
 });
