@@ -1,6 +1,10 @@
 # magic-tables
 
-WIP JS data table library written in TypeScript
+JS data table library written in TypeScript
+
+[Available from npm](https://www.npmjs.com/package/magic-tables)
+
+```npm install magic-tables```
 
 ## Aims
 
