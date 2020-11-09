@@ -30,5 +30,23 @@ describe("Integration", () => {
 
     });
 
+    it("Should add a column to a row when I add one and remove it once removed", () => {
+
+        let table = new Table("Test");
+        table.columns.add("Column1");
+        let row = table.rows.add();
+
+        expect(row.field("Column1")).toBeDefined();
+        expect(row.field("Column2")).toBeUndefined();
+
+        table.columns.add("Column2");
+
+        expect(row.field("Column2")).toBeDefined();
+
+        table.columns.remove("Column2");
+
+        expect(row.field("Column2")).toBeUndefined();
+
+    });
 
 });

@@ -4,11 +4,12 @@ import { Table } from "./Table";
 //TODO: Tidy up and add test coverage
 
 export class ColumnSet<T = any> {
-    private static readonly PERMITTED_ARRAY_METHODS = [
+    private static readonly PERMITTED_ARRAY_FIELDS = [
         "find" as (keyof ColumnSet),
         "filter" as (keyof ColumnSet),
         "indexOf" as (keyof ColumnSet),
         "includes" as (keyof ColumnSet),
+        "length" as (keyof ColumnSet),
         "map" as (keyof ColumnSet),
         "reduce" as (keyof ColumnSet)
     ] as [
@@ -16,6 +17,7 @@ export class ColumnSet<T = any> {
         "filter",
         "indexOf",
         "includes",
+        "length",
         "map",
         "reduce"
     ];
@@ -33,6 +35,7 @@ export class ColumnSet<T = any> {
     ) {
     }
 
+    [Symbol.iterator]: () => Iterator<Column>;
     [index: number]: Column;
     length: number;
 
@@ -74,12 +77,18 @@ export class ColumnSet<T = any> {
 
 
     private get(target: Column[], p: string | number | symbol) {
-        if (typeof p === "number")
-            return target[p];
+        if (typeof p !== 'symbol') {
+            let i = +p;
+            if(i == p)
+                return target[i];
+        }
+        else if(p === Symbol.iterator) {
+            return target[Symbol.iterator];
+        }
 
         let value: any, object: any;
 
-        if (typeof p === "string" && ColumnSet.PERMITTED_ARRAY_METHODS.includes(p as (typeof ColumnSet.PERMITTED_ARRAY_METHODS)[number])) {
+        if (typeof p === "string" && ColumnSet.PERMITTED_ARRAY_FIELDS.includes(p as (typeof ColumnSet.PERMITTED_ARRAY_FIELDS)[number])) {
             value = target[p as any] as any;
             object = this.columns;
         }

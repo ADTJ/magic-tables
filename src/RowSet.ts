@@ -4,11 +4,12 @@ import { Table } from "./Table";
 //TODO: Tidy up and add test coverage
 
 export class RowSet<T = any> implements Pick<ProxyHandler<Row<T>[]>, "get"> {
-    private static readonly PERMITTED_ARRAY_METHODS = [
+    private static readonly PERMITTED_ARRAY_FIELDS = [
         "find" as (keyof RowSet),
         "filter" as (keyof RowSet),
         "indexOf" as (keyof RowSet),
         "includes" as (keyof RowSet),
+        "length" as (keyof RowSet),
         "map" as (keyof RowSet),
         "reduce" as (keyof RowSet)
     ] as [
@@ -16,6 +17,7 @@ export class RowSet<T = any> implements Pick<ProxyHandler<Row<T>[]>, "get"> {
         "filter",
         "indexOf",
         "includes",
+        "length",
         "map",
         "reduce"
     ];
@@ -26,8 +28,6 @@ export class RowSet<T = any> implements Pick<ProxyHandler<Row<T>[]>, "get"> {
     includes: (Pick<Array<Row>, "includes">)["includes"];
     map: (Pick<Array<Row>, "map">)["map"];
     reduce: (Pick<Array<Row>, "reduce">)["reduce"];
-
-
 
     constructor(
         protected rows: Row<T>[],
@@ -71,7 +71,7 @@ export class RowSet<T = any> implements Pick<ProxyHandler<Row<T>[]>, "get"> {
 
         let value: any, object: any;
 
-        if (typeof p === "string" && RowSet.PERMITTED_ARRAY_METHODS.includes(p as (typeof RowSet.PERMITTED_ARRAY_METHODS)[number])) {
+        if (typeof p === "string" && RowSet.PERMITTED_ARRAY_FIELDS.includes(p as (typeof RowSet.PERMITTED_ARRAY_FIELDS)[number])) {
             value = target[p as any] as any;
             object = this.rows;
         }
