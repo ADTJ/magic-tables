@@ -3,7 +3,7 @@ import { Table } from "./Table";
 
 //TODO: Tidy up and add test coverage
 
-export class ColumnSet {
+export class ColumnSet<T = any> {
     private static readonly PERMITTED_ARRAY_METHODS = [
         "find" as (keyof ColumnSet),
         "filter" as (keyof ColumnSet),
@@ -27,14 +27,11 @@ export class ColumnSet {
     map: (Pick<Array<Column>, "map">)["map"];
     reduce: (Pick<Array<Column>, "reduce">)["reduce"];
 
-
-
     constructor(
         protected columns: Column[],
         protected table: Table
     ) {
     }
-
 
     [index: number]: Column;
     length: number;
@@ -43,7 +40,7 @@ export class ColumnSet {
         let column = new Column({ name, table: this.table });
         this.columns.push(column);
 
-        //TODO: update table schema
+        this.table.updateSchema();
         return column;
     }
 
@@ -56,15 +53,22 @@ export class ColumnSet {
 
     }
 
+    count() {
+        return this.columns.length;
+    }
+
     remove(column: Column | string) {
         column = this.column(column);
 
         this.columns.splice(this.columns.indexOf(column), 1);
 
-        //TODO: Update table schema
+        this.table.updateSchema();
     }
 
-    private column(column: Column | string) {
+    column<TCol extends keyof T>(column: TCol): Column<T[TCol]>;
+    column<TCol extends keyof T>(column: Column<TCol>): Column<TCol>;
+    column(column: Column | string): Column;
+    column(column: Column<any> | string | any) {
         return typeof column === "string" ? this.columns.find(col => col.name === column) : column;
     }
 
@@ -73,23 +77,22 @@ export class ColumnSet {
         if (typeof p === "number")
             return target[p];
 
+        let value: any, object: any;
+
         if (typeof p === "string" && ColumnSet.PERMITTED_ARRAY_METHODS.includes(p as (typeof ColumnSet.PERMITTED_ARRAY_METHODS)[number])) {
-            let value = target[p as any] as any;
-            if (typeof value === "function")
-                return value.bind(this.columns);
-
-            else
-                return value;
-
+            value = target[p as any] as any;
+            object = this.columns;
+        }
+        else if (ColumnSet.prototype.hasOwnProperty(p)) {
+            value = this[p as keyof ColumnSet];
+            object = this;
         }
 
-        if (ColumnSet.prototype.hasOwnProperty(p)) {
-            let value = this[p as keyof ColumnSet];
-            if (typeof value === "function")
-                return value.bind(this);
-
-            else
-                return value;
+        if (typeof value === "function") {
+            return (...args: any[]) => value.apply(object, args);
+        }
+        else {
+            return value;
         }
     }
 }

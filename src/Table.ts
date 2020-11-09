@@ -1,16 +1,18 @@
 import { Column } from "./Column";
 import { ColumnSet } from "./ColumnSet";
 import { Row } from "./Row";
+import { RowSet } from "./RowSet";
 
 /**  Represents a table of data */
-export class Table {
+export class Table<T = any> {
     /** The name of the table */
     name: string;
     
     protected _columns: Column[];
-    protected _rows: Row[];
+    protected _rows: Row<T>[];
 
-    private columnProxy: ColumnSet;
+    private columnProxy: ColumnSet<T>;
+    private rowProxy: RowSet<T>;
 
     /** Returns the set of columns in this table's schema */
     get columns() {
@@ -19,7 +21,21 @@ export class Table {
 
     /** Returns the set of rows currently in the table */
     get rows() {
-        return this._rows;
+        return this.rowProxy;
+    }
+
+    get schema() {
+        return this.columns.map(col => ({
+            name: col.name
+        }))
+        .reduce((schema, column) => (schema[column.name] = column, schema), {} as { [columnName: string]: { name: string; }});
+    }
+
+    updateSchema() {
+        let schema = this.schema;
+        for(let row of this.rows) {
+            row.__updateSchema(schema);
+        }
     }
 
     /** @param name The name of the table to be created */
@@ -41,7 +57,9 @@ export class Table {
         this._columns = [];
         this._rows = [];
 
+        //The "as any as" casts are required because the collection sets are providing the type information and extending/limiting the methods available to the array
         this.columnProxy = new Proxy(this._columns, new ColumnSet(this._columns, this) as any) as any as ColumnSet;
+        this.rowProxy = new Proxy(this._rows, new RowSet(this._rows, this) as any) as any as RowSet;
     }
     
 }
