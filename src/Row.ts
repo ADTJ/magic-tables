@@ -10,7 +10,7 @@ export class Row<T = any> {
         this.table = table;
 
         for(let column in table.schema) {
-            model[column] ??= null;
+            model[column] = model[column] ?? null;
         }
     }
 
@@ -27,7 +27,7 @@ export class Row<T = any> {
 
     __updateSchema(schema: any) {
         for(let key in schema) {
-            (this.model as any)[key] ??= null;
+            (this.model as any)[key] = (this.model as any)[key] ?? null;
         }
 
         for(let key of Object.getOwnPropertyNames(this.model).filter(key => !(key in schema))) {
